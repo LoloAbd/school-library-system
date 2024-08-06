@@ -2,7 +2,6 @@
 import './Registration.css';
 import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaUserEdit, FaEnvelope } from "react-icons/fa";
-import Validation from './EmailValidation';
 import axios from 'axios';
 
 const Registration = () => {
@@ -12,8 +11,6 @@ const Registration = () => {
         email: '',
         password: ''
     });
-
-    const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
     const handleInput = (event) => {
@@ -26,30 +23,19 @@ const Registration = () => {
 
         // Log values before sending the request
         console.log("Submitting values:", values);
-
-        // Validate input values
-        const validationErrors = Validation(values);
-        setErrors(validationErrors);
-
-        // Check if there are any validation errors
-        const noErrors = Object.values(validationErrors).every(err => err === "");
         
-        if (noErrors) {
-            try {
-                const response = await axios.post('http://localhost:8081/Registration', values);
-                console.log("Server response:", response);
-                navigate('/');
-            } catch (err) {
-                console.error("Submission error:", err);
-            }
-        } else {
-            console.log("Validation errors:", validationErrors);
+        try {
+            const response = await axios.post('http://localhost:8081/Registration', values);
+            console.log("Server response:", response);
+            navigate('/');
+        } catch (err) {
+            console.error("Submission error:", err);
         }
-    };
+        }
 
     return (
         <div className="wrapper">
-            <div className="form-box login">
+            <div className="form-box">
                 <form onSubmit={handleSubmit}>
                     <h2>Sign Up</h2>
                     <div className="input-box">
@@ -63,7 +49,6 @@ const Registration = () => {
                     <div className="input-box">
                         <input type="email" placeholder='Email' name='email' value={values.email} onChange={handleInput} required />
                         <FaEnvelope className='icon' />
-                        {errors.email && <span className='text-danger'>{errors.email}</span>}
                     </div>
                     <div className="input-box">
                         <input type="password" placeholder='Password' name='password' value={values.password} onChange={handleInput} required />
