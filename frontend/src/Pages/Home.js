@@ -30,7 +30,7 @@ const Home = () => {
                             <span className="dropbtn">School Book Club</span>
                             <div className="dropdown-content">
                                 <Link to="/AddStudent">Add a Student</Link>
-                                <Link to="/ShowAllStudents">Show All Students</Link>
+                                <Link to="/ShowAllStudent">Show All Students</Link>
                             </div>
                         </li>
                     </ul>

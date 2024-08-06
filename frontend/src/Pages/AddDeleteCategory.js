@@ -24,6 +24,7 @@ const AddDeleteCategory = () => {
         try {
             const response = await axios.post('http://localhost:8081/AddDeleteCategory', category);
             console.log("Server response:", response);
+            alert("Category inserted successfully");
             navigate('/AddDeleteCategory');
         } catch (err) {
             console.error("Submission error:", err);

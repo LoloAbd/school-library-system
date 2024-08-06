@@ -43,6 +43,7 @@ const AddBook = () => {
         try {
             const response = await axios.post('http://localhost:8081/AddBook', book);
             console.log("Server response:", response);
+            alert("Book inserted successfully");
             navigate('/');
         } catch (err) {
             console.error("Submission error:", err);
