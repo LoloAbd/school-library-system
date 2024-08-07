@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import './Login.css'
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaEnvelope, FaLock } from "react-icons/fa";
 import axios from 'axios';
 
 const Login = () => {
@@ -26,7 +26,7 @@ const Login = () => {
                 } else {
                     alert("Email or Password Incorrect");
                 }
-            })
+            });
    
     };
 
@@ -43,7 +43,7 @@ const Login = () => {
                             onChange={handleInput} 
                             required 
                         />
-                        <FaUser className='icon' />
+                        <FaEnvelope className='icon' />
                     </div>
                     <div className="input-box">
                         <input 
@@ -54,6 +54,9 @@ const Login = () => {
                             required 
                         />
                         <FaLock className='icon' />
+                    </div>
+                    <div className="register-link">
+                        <p><Link to="/ForgotPassword">Forgot password?</Link></p>
                     </div>
                     <button type="submit">Login</button>
                     <div className="register-link">

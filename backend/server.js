@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
 
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -22,6 +23,58 @@ db.connect(err => {
     console.log('Connected to database.');
 });
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+// Function to generate a random 6-digit number
+const generateRandom6DigitNumber = () => Math.floor(100000 + Math.random() * 900000);
+const code = generateRandom6DigitNumber();
+
+app.get('/api/code', (req, res) => {
+    res.json({ code: code });
+});
+
+
+app.post('/forgotPassword', (req, res) => {
+
+    const email = req.body.email;
+    const expiryDate = new Date(Date.now() + 3600000); // 1 hour expiry
+
+    // Update the database with the code and expiry date
+   const sql = "UPDATE user SET code = ?, codeExpiry = ? WHERE email = ?";
+    db.query(sql, [code, expiryDate, email], (err, data) => {
+         if (err) {
+            console.error('Error Email not found', err);
+            return res.status(500).json({ message: "Error Email not found", error: err });
+        }
+        return res.status(201).json(data);
+    });
+
+});
+
+
+
+// Reset Password Endpoint
+app.post('/resetPassword', async (req, res) => {
+    const {code, newPassword, confirmPassword } = req.body;
+
+    if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+        const sql = "UPDATE user SET password = ? WHERE code = ?";
+        db.query(sql, [newPassword, code], (err, updateResult) => {
+            if (err) {
+                console.error('Error updating password:', err);
+                return res.status(500).json({ message: 'Error updating password' });
+            }
+            return res.status(200).json({ message: 'Password updated successfully' });
+        });
+
+});
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 
 app.post('/Registration', (req, res) => {
@@ -211,6 +264,8 @@ app.post('/Login', (req, res) => {
     });
 });
 
+
 app.listen(8081, () => {
     console.log("Server running on port 8081");
 });
+

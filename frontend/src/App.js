@@ -7,15 +7,13 @@ import ShowAllBooks from './Pages/ShowAllBooks'
 import AddDeleteCategory from './Pages/AddDeleteCategory'
 import AddStudent from './Pages/AddStudent'
 import ShowAllStudent from './Pages/ShowAllStudent'
+import ForgotPassword from './Pages/ForgotPassword'
+import ResetPassword from './Pages/ResetPassword'
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 
 
 function App() {
   return (
-    /*
-    <div>
-      <Home />
-    </div>*/
 
     <BrowserRouter>
       <Routes>
@@ -27,6 +25,8 @@ function App() {
         <Route path='/ShowAllBooks' element={<ShowAllBooks />}></Route>
         <Route path='/AddStudent' element={<AddStudent />}></Route>
         <Route path='/ShowAllStudent' element={<ShowAllStudent />}></Route>
+        <Route path='/ForgotPassword' element={<ForgotPassword />}></Route>
+        <Route path='/ResetPassword' element={<ResetPassword />}></Route>
       </Routes>
     </BrowserRouter>
   );

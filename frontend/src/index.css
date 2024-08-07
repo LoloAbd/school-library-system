@@ -9,6 +9,7 @@
 body {
   background-image: url('./img/backgroundHome1.jpg');
   background-repeat: no-repeat;
+  background-size: cover;
   font-family: "Playfair Display", serif;
   display: flex;
   justify-content: center;
