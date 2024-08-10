@@ -44,7 +44,7 @@ const AddBook = () => {
             const response = await axios.post('http://localhost:8081/AddBook', book);
             console.log("Server response:", response);
             alert("Book inserted successfully");
-            navigate('/');
+            navigate('/LibrarianHome');
         } catch (err) {
             console.error("Submission error:", err);
         }
@@ -141,7 +141,7 @@ const AddBook = () => {
                     </div>
                     <button type="submit">Add Book</button>
                     <div className="link">
-                        <Link to='/'><a>Back to Home</a></Link>
+                        <Link to='/LibrarianHome'><a>Back to Home</a></Link>
                     </div>
                 </form>
             </div>

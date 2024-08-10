@@ -29,7 +29,7 @@ const AddStudent = () => {
             const response = await axios.post('http://localhost:8081/addStudent', student);
             console.log("Server response:", response);
             alert('Student added successfully');
-            navigate('/'); // Navigate to home or another page if needed
+            navigate('/StudentFee'); 
         } catch (error) {
             console.error("Error adding student:", error);
             alert('Error adding student');
@@ -109,7 +109,7 @@ const AddStudent = () => {
                     </div>
                     <button type="submit">Add Student</button>
                     <div className="link">
-                        <Link to='/'><a>Back to Home</a></Link>
+                        <Link to='/LibrarianHome'><a>Back to Home</a></Link>
                     </div>
                 </form>
             </div>       

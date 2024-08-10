@@ -27,7 +27,7 @@ const Registration = () => {
         try {
             const response = await axios.post('http://localhost:8081/Registration', values);
             console.log("Server response:", response);
-            navigate('/');
+            navigate('/LibrarianHome');
         } catch (err) {
             console.error("Submission error:", err);
         }

@@ -9,7 +9,6 @@ const Login = () => {
         email: '',
         password: ''
     });
-
     const navigate = useNavigate();
 
     const handleInput = (event) => {
@@ -19,15 +18,21 @@ const Login = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        axios.post('http://localhost:8081/login', values)
+        axios.post('http://localhost:8081/Login', values)
             .then(res => {
-                if (res.data === "Success") {
-                    navigate('/');
+                if (res.data.status === "Success") {
+                    // Store librarian data in localStorage or context for later use
+                    localStorage.setItem('librarianId', res.data.librarianId);
+                    localStorage.setItem('librarianName', res.data.librarianName);
+                    navigate('/LibrarianHome');
                 } else {
-                    alert("Email or Password Incorrect");
+                    alert(res.data.message || "Email or Password Incorrect");
                 }
+            })
+            .catch(err => {
+                console.error('Login error:', err);
+                alert('Invalid email or password');
             });
-   
     };
 
     return (

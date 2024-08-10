@@ -6,7 +6,7 @@ import axios from 'axios';
 import emailjs from '@emailjs/browser';
 
 
-const ForgotPassword = () => {
+const ForgotPassword = () => { 
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -16,7 +16,7 @@ const ForgotPassword = () => {
      // Extract code from the response
 
             useEffect(() => {
-                const fetchConstant = async () => {
+                const fetchCode = async () => {
                     try {
                         const response = await axios.get('http://localhost:8081/api/code');
                         setCode(response.data.code);
@@ -25,7 +25,7 @@ const ForgotPassword = () => {
                     }
                     };
 
-                fetchConstant();
+                fetchCode();
             }, []);
 
     const handleInputChange = (event) => {

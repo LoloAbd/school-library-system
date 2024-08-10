@@ -27,7 +27,7 @@ const ShowAllBooks = () => {
     };
 
     const handleBackToHome = () => {
-        navigate('/LibrarianHome');
+        navigate('/');
     };
 
     const filteredBooks = books.filter((book) =>

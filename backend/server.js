@@ -38,7 +38,7 @@ app.get('/api/code', (req, res) => {
 app.post('/forgotPassword', (req, res) => {
 
     const email = req.body.email;
-    const expiryDate = new Date(Date.now() + 3600000); // 1 hour expiry
+    const expiryDate = new Date(Date.now() + 120000);
 
     // Update the database with the code and expiry date
    const sql = "UPDATE user SET code = ?, codeExpiry = ? WHERE email = ?";
@@ -51,6 +51,21 @@ app.post('/forgotPassword', (req, res) => {
     });
 
 });
+
+function clearExpiredCodes() {
+    
+    const now = new Date();
+    const sql = "UPDATE user SET code = NULL, codeExpiry = NULL WHERE codeExpiry < ?";
+    db.query(sql, [now], (err, data) => {
+        if (err) {
+            console.error('Error clearing expired codes', err);
+        } else {
+            console.log('Expired codes cleared:', data.affectedRows);
+        }
+    });
+}
+
+setInterval(clearExpiredCodes, 120000);
 
 
 
@@ -168,6 +183,55 @@ app.get('/students', (req, res) => {
 });
 
 
+
+// Display all borrowed books
+
+app.get('/loans', (req, res) => {
+    const sql = "SELECT * FROM lend";
+    
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error('Error fetching students:', err);
+            return res.status(500).json({ message: "Error fetching students", error: err });
+        }
+        return res.status(200).json(data);
+    });
+});
+
+
+// borrowed books and Delete it 
+app.post('/lend', (req, res) => {
+    const insertLendSql = "INSERT INTO lend(studentId, bookId, sfName, bookTitle, lendDate, dueDate) VALUES (?, ?, ?, ?, ?, ?)";
+    const deleteBookSql = "DELETE FROM book WHERE id = ?";
+    const lendValues = [
+        req.body.studentId,
+        req.body.bookId,
+        req.body.sfName,
+        req.body.bookTitle,
+        req.body.lendDate,
+        req.body.dueDate
+    ];
+
+    db.query(insertLendSql, lendValues, (err, data) => {
+        if (err) {
+            console.error('Error inserting data:', err);
+            return res.status(500).json({ message: "Error inserting data", error: err });
+        }
+        
+        db.query(deleteBookSql, [req.body.bookId], (err, result) => {
+            if (err) {
+                console.error('Error deleting book:', err);
+                return res.status(500).json({ message: "Error deleting book", error: err });
+            }
+            
+            return res.status(201).json({ message: "Book lent successfully and deleted from inventory", data: result });
+        });
+    });
+});
+
+
+
+
 // Add category
 app.post('/AddDeleteCategory', (req, res) => {
     const sql = "INSERT INTO category(categoryName) VALUES (?)";
@@ -249,20 +313,83 @@ app.get('/books/search', (req, res) => {
 
 
 app.post('/Login', (req, res) => {
-    const sql = "SELECT * FROM user WHERE email = ? AND password = ?";
+    const sql = "SELECT id, firstName FROM user WHERE email = ? AND password = ?";
 
     db.query(sql, [req.body.email, req.body.password], (err, data) => {
         if (err) {
-            return res.json("Error");
+            console.error("Error during login query:", err);
+            return res.status(500).json({ status: "Error", message: "Internal server error" });
         }
         if (data.length > 0) {
-            return res.json("Success");
-        }
-        else {
-            return res.json("Fail");
+            const librarianId = data[0].id;
+            const librarianName = data[0].firstName;
+            return res.json({
+                status: "Success",
+                librarianId: librarianId,
+                librarianName: librarianName
+            });
+        } else {
+            return res.status(401).json({ status: "Fail", message: "Invalid email or password" });
         }
     });
 });
+
+
+
+
+app.post('/Fees', (req, res) => {
+    const sqlInsertFee = "INSERT INTO fees(librarianId, librarianName, studentId, sfName, mFees, paymentDate) VALUES (?, ?, ?, ?, ?, ?)";
+    const sqlUpdateStudent = "UPDATE student SET paymentDate = ? WHERE id = ?";
+    const values = [
+        req.body.librarianId,
+        req.body.librarianName,
+        req.body.studentId,
+        req.body.sfName,
+        req.body.mFees,
+        req.body.paymentDate
+    ];
+
+    // Start a transaction
+    db.beginTransaction(err => {
+        if (err) {
+            console.error('Error starting transaction:', err);
+            return res.status(500).json({ message: "Error starting transaction", error: err });
+        }
+
+        // Insert into fees table
+        db.query(sqlInsertFee, values, (err, result) => {
+            if (err) {
+                console.error('Error inserting data into fees table:', err);
+                return db.rollback(() => {
+                    res.status(500).json({ message: "Error inserting data into fees table", error: err });
+                });
+            }
+
+            // Update paymentDate in students table
+            db.query(sqlUpdateStudent, [req.body.paymentDate, req.body.studentId], (err, result) => {
+                if (err) {
+                    console.error('Error updating students table:', err);
+                    return db.rollback(() => {
+                        res.status(500).json({ message: "Error updating students table", error: err });
+                    });
+                }
+
+                // Commit the transaction
+                db.commit(err => {
+                    if (err) {
+                        console.error('Error committing transaction:', err);
+                        return db.rollback(() => {
+                            res.status(500).json({ message: "Error committing transaction", error: err });
+                        });
+                    }
+
+                    res.status(201).json({ message: "Data inserted successfully", paymentDate: req.body.paymentDate });
+                });
+            });
+        });
+    });
+});
+
 
 
 app.listen(8081, () => {

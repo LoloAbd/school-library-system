@@ -16,6 +16,7 @@
 }
 
 .books-container h2{
+    font-size: 50px;
     color: rgb(153, 147, 93);
 }
 
@@ -55,4 +56,10 @@
 
 .back p a:hover {
     text-decoration: underline;
+}
+
+
+.overdue {
+    background-color: red;
+    color: white;
 }
